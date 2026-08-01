@@ -1,0 +1,5 @@
+import { databaseError, supabase } from "../../../db/supabase";
+import { noteSchema, noteWrite, serializeNote } from "./shared";
+export const dynamic = "force-dynamic";
+export async function GET() { try { const { data, error } = await supabase().from("notes").select("*").eq("archived", false).order("pinned", { ascending: false }).order("updated_at", { ascending: false }); if (error) throw databaseError(error, "Unable to load notes"); return Response.json({ notes: (data ?? []).map((row) => serializeNote(row as Record<string, unknown>)) }); } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Unable to load notes" }, { status: 500 }); } }
+export async function POST(request: Request) { try { const parsed = noteSchema.safeParse(await request.json()); if (!parsed.success) return Response.json({ error: parsed.error.issues[0]?.message }, { status: 400 }); return Response.json({ note: await noteWrite(null, parsed.data) }, { status: 201 }); } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Unable to create note" }, { status: 500 }); } }

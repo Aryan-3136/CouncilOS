@@ -1,0 +1,5 @@
+import { databaseError, supabase } from "../../../../db/supabase";
+import { noteSchema, noteWrite } from "../shared";
+export const dynamic = "force-dynamic";
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) { try { const parsed = noteSchema.safeParse(await request.json()); if (!parsed.success) return Response.json({ error: parsed.error.issues[0]?.message }, { status: 400 }); return Response.json({ note: await noteWrite((await params).id, parsed.data) }); } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Unable to update note" }, { status: 500 }); } }
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) { try { const { error } = await supabase().from("notes").update({ archived: true }).eq("id", (await params).id).eq("archived", false); if (error) throw databaseError(error, "Unable to delete note"); return new Response(null, { status: 204 }); } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Unable to delete note" }, { status: 500 }); } }

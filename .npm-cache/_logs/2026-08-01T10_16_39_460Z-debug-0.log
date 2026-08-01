@@ -1,0 +1,154 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.13.0
+2 info using node@v24.16.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\scyth\Documents\Codex\2026-08-01\build-the-application-incrementally-complete-one\.npmrc
+5 silly config load:file:C:\Users\scyth\.npmrc
+6 silly config load:file:C:\Users\scyth\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install @hookform/resolvers@5.2.2 @tanstack/react-query@5.90.16 framer-motion@12.34.3 lucide-react@0.575.0 react-hook-form@7.72.0 zod@4.3.6 zustand@5.0.11
+8 verbose argv "install" "@hookform/resolvers@5.2.2" "@tanstack/react-query@5.90.16" "framer-motion@12.34.3" "lucide-react@0.575.0" "react-hook-form@7.72.0" "zod@4.3.6" "zustand@5.0.11" "--no-audit" "--no-fund" "--cache" ".npm-cache"
+9 verbose logfile logs-max:10 dir:C:\Users\scyth\Documents\Codex\2026-08-01\build-the-application-incrementally-complete-one\.npm-cache\_logs\2026-08-01T10_16_39_460Z-
+10 verbose logfile C:\Users\scyth\Documents\Codex\2026-08-01\build-the-application-incrementally-complete-one\.npm-cache\_logs\2026-08-01T10_16_39_460Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+13 silly idealTree buildDeps
+14 silly fetch manifest @hookform/resolvers@5.2.2
+15 silly packumentCache full:https://registry.npmjs.org/@hookform%2fresolvers cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/@hookform%2fresolvers 459ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/@hookform%2fresolvers set size:undefined disposed:false
+18 silly fetch manifest react-hook-form@7.72.0
+19 silly packumentCache full:https://registry.npmjs.org/react-hook-form cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/react-hook-form 161ms (cache miss)
+21 silly packumentCache full:https://registry.npmjs.org/react-hook-form set size:undefined disposed:false
+22 silly fetch manifest react@19.2.6
+23 silly packumentCache full:https://registry.npmjs.org/react cache-miss
+24 http fetch GET 200 https://registry.npmjs.org/react 202ms (cache miss)
+25 silly packumentCache full:https://registry.npmjs.org/react set size:undefined disposed:false
+26 silly fetch manifest @tanstack/react-query@5.90.16
+27 silly packumentCache full:https://registry.npmjs.org/@tanstack%2freact-query cache-miss
+28 http fetch GET 200 https://registry.npmjs.org/@tanstack%2freact-query 94ms (cache miss)
+29 silly packumentCache full:https://registry.npmjs.org/@tanstack%2freact-query set size:undefined disposed:false
+30 silly fetch manifest framer-motion@12.34.3
+31 silly packumentCache full:https://registry.npmjs.org/framer-motion cache-miss
+32 http fetch GET 200 https://registry.npmjs.org/framer-motion 188ms (cache miss)
+33 silly packumentCache full:https://registry.npmjs.org/framer-motion set size:undefined disposed:false
+34 silly fetch manifest @emotion/is-prop-valid@*
+35 silly packumentCache full:https://registry.npmjs.org/@emotion%2fis-prop-valid cache-miss
+36 http fetch GET 200 https://registry.npmjs.org/@emotion%2fis-prop-valid 280ms (cache miss)
+37 silly packumentCache full:https://registry.npmjs.org/@emotion%2fis-prop-valid set size:undefined disposed:false
+38 silly fetch manifest react-dom@19.2.6
+39 silly packumentCache full:https://registry.npmjs.org/react-dom cache-miss
+40 http fetch GET 200 https://registry.npmjs.org/react-dom 237ms (cache miss)
+41 silly packumentCache full:https://registry.npmjs.org/react-dom set size:undefined disposed:false
+42 silly fetch manifest lucide-react@0.575.0
+43 silly packumentCache full:https://registry.npmjs.org/lucide-react cache-miss
+44 http fetch GET 200 https://registry.npmjs.org/lucide-react 92ms (cache miss)
+45 silly packumentCache full:https://registry.npmjs.org/lucide-react set size:undefined disposed:false
+46 silly fetch manifest zod@4.3.6
+47 silly packumentCache full:https://registry.npmjs.org/zod cache-miss
+48 http fetch GET 200 https://registry.npmjs.org/zod 124ms (cache miss)
+49 silly packumentCache full:https://registry.npmjs.org/zod set size:undefined disposed:false
+50 silly fetch manifest zustand@5.0.11
+51 silly packumentCache full:https://registry.npmjs.org/zustand cache-miss
+52 http fetch GET 200 https://registry.npmjs.org/zustand 58ms (cache miss)
+53 silly packumentCache full:https://registry.npmjs.org/zustand set size:undefined disposed:false
+54 silly fetch manifest @types/react@19.2.14
+55 silly packumentCache full:https://registry.npmjs.org/@types%2freact cache-miss
+56 http fetch GET 200 https://registry.npmjs.org/@types%2freact 112ms (cache miss)
+57 silly packumentCache full:https://registry.npmjs.org/@types%2freact set size:undefined disposed:false
+58 silly fetch manifest immer@>=9.0.6
+59 silly packumentCache full:https://registry.npmjs.org/immer cache-miss
+60 http fetch GET 200 https://registry.npmjs.org/immer 296ms (cache miss)
+61 silly packumentCache full:https://registry.npmjs.org/immer set size:undefined disposed:false
+62 silly fetch manifest use-sync-external-store@>=1.2.0
+63 silly packumentCache full:https://registry.npmjs.org/use-sync-external-store cache-miss
+64 http fetch GET 200 https://registry.npmjs.org/use-sync-external-store 164ms (cache miss)
+65 silly packumentCache full:https://registry.npmjs.org/use-sync-external-store set size:undefined disposed:false
+66 silly placeDep ROOT @hookform/resolvers@5.2.2 OK for: site-creator-vinext-starter@0.1.0 want: 5.2.2
+67 silly placeDep ROOT react-hook-form@7.72.0 OK for: @hookform/resolvers@5.2.2 want: ^7.55.0
+68 silly placeDep ROOT @tanstack/react-query@5.90.16 OK for: site-creator-vinext-starter@0.1.0 want: 5.90.16
+69 silly placeDep ROOT framer-motion@12.34.3 OK for: site-creator-vinext-starter@0.1.0 want: 12.34.3
+70 silly placeDep ROOT lucide-react@0.575.0 OK for: site-creator-vinext-starter@0.1.0 want: 0.575.0
+71 silly placeDep ROOT react-hook-form@7.72.0 REPLACE for: site-creator-vinext-starter@0.1.0 want: 7.72.0
+72 silly placeDep ROOT zod@4.3.6 REPLACE for: site-creator-vinext-starter@0.1.0 want: 4.3.6
+73 silly placeDep ROOT zustand@5.0.11 OK for: site-creator-vinext-starter@0.1.0 want: 5.0.11
+74 silly fetch manifest @standard-schema/utils@^0.3.0
+75 silly packumentCache full:https://registry.npmjs.org/@standard-schema%2futils cache-miss
+76 silly fetch manifest @tanstack/query-core@5.90.16
+77 silly packumentCache full:https://registry.npmjs.org/@tanstack%2fquery-core cache-miss
+78 silly fetch manifest motion-dom@^12.34.3
+79 silly packumentCache full:https://registry.npmjs.org/motion-dom cache-miss
+80 silly fetch manifest motion-utils@^12.29.2
+81 silly packumentCache full:https://registry.npmjs.org/motion-utils cache-miss
+82 http fetch GET 200 https://registry.npmjs.org/motion-dom 95ms (cache miss)
+83 silly packumentCache full:https://registry.npmjs.org/motion-dom set size:undefined disposed:false
+84 http fetch GET 200 https://registry.npmjs.org/@tanstack%2fquery-core 138ms (cache miss)
+85 silly packumentCache full:https://registry.npmjs.org/@tanstack%2fquery-core set size:undefined disposed:false
+86 http fetch GET 200 https://registry.npmjs.org/@standard-schema%2futils 283ms (cache miss)
+87 silly packumentCache full:https://registry.npmjs.org/@standard-schema%2futils set size:undefined disposed:false
+88 http fetch GET 200 https://registry.npmjs.org/motion-utils 333ms (cache miss)
+89 silly packumentCache full:https://registry.npmjs.org/motion-utils set size:undefined disposed:false
+90 silly placeDep ROOT @standard-schema/utils@0.3.0 OK for: @hookform/resolvers@5.2.2 want: ^0.3.0
+91 silly placeDep ROOT @tanstack/query-core@5.90.16 OK for: @tanstack/react-query@5.90.16 want: 5.90.16
+92 silly placeDep ROOT motion-dom@12.43.0 OK for: framer-motion@12.34.3 want: ^12.34.3
+93 silly placeDep ROOT motion-utils@12.39.0 OK for: framer-motion@12.34.3 want: ^12.29.2
+94 silly fetch manifest motion-utils@^12.39.0
+95 silly packumentCache full:https://registry.npmjs.org/motion-utils cache-miss
+96 http cache https://registry.npmjs.org/motion-utils 11ms (cache hit)
+97 silly packumentCache full:https://registry.npmjs.org/motion-utils set size:66443 disposed:false
+98 silly reify mark retired [
+98 silly reify   'C:\\Users\\scyth\\Documents\\Codex\\2026-08-01\\build-the-application-incrementally-complete-one\\node_modules\\zod'
+98 silly reify ]
+99 silly reify moves {
+99 silly reify   'C:\\Users\\scyth\\Documents\\Codex\\2026-08-01\\build-the-application-incrementally-complete-one\\node_modules\\zod': 'C:\\Users\\scyth\\Documents\\Codex\\2026-08-01\\build-the-application-incrementally-complete-one\\node_modules\\.zod-VKHsn7w3'
+99 silly reify }
+100 http cache @standard-schema/utils@https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz 0ms (cache hit)
+101 http cache motion-utils@https://registry.npmjs.org/motion-utils/-/motion-utils-12.39.0.tgz 0ms (cache hit)
+102 http cache motion-dom@https://registry.npmjs.org/motion-dom/-/motion-dom-12.43.0.tgz 0ms (cache hit)
+103 http cache react-hook-form@https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.72.0.tgz 0ms (cache hit)
+104 http cache zustand@https://registry.npmjs.org/zustand/-/zustand-5.0.11.tgz 0ms (cache hit)
+105 http cache @tanstack/query-core@https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.16.tgz 0ms (cache hit)
+106 http cache framer-motion@https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.3.tgz 0ms (cache hit)
+107 http cache lucide-react@https://registry.npmjs.org/lucide-react/-/lucide-react-0.575.0.tgz 0ms (cache hit)
+108 silly tarball no local data for @standard-schema/utils@https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz. Extracting by manifest.
+109 http cache @tanstack/react-query@https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.16.tgz 0ms (cache hit)
+110 silly tarball no local data for motion-utils@https://registry.npmjs.org/motion-utils/-/motion-utils-12.39.0.tgz. Extracting by manifest.
+111 silly tarball no local data for motion-dom@https://registry.npmjs.org/motion-dom/-/motion-dom-12.43.0.tgz. Extracting by manifest.
+112 silly tarball no local data for react-hook-form@https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.72.0.tgz. Extracting by manifest.
+113 silly tarball no local data for zustand@https://registry.npmjs.org/zustand/-/zustand-5.0.11.tgz. Extracting by manifest.
+114 silly tarball no local data for @tanstack/query-core@https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.16.tgz. Extracting by manifest.
+115 http cache zod@https://registry.npmjs.org/zod/-/zod-4.3.6.tgz 0ms (cache hit)
+116 silly tarball no local data for framer-motion@https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.3.tgz. Extracting by manifest.
+117 silly tarball no local data for lucide-react@https://registry.npmjs.org/lucide-react/-/lucide-react-0.575.0.tgz. Extracting by manifest.
+118 http cache @hookform/resolvers@https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.2.tgz 0ms (cache hit)
+119 silly tarball no local data for @tanstack/react-query@https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.16.tgz. Extracting by manifest.
+120 silly tarball no local data for zod@https://registry.npmjs.org/zod/-/zod-4.3.6.tgz. Extracting by manifest.
+121 silly tarball no local data for @hookform/resolvers@https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.2.tgz. Extracting by manifest.
+122 http fetch GET 200 https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz 298ms (cache miss)
+123 http fetch GET 200 https://registry.npmjs.org/zustand/-/zustand-5.0.11.tgz 733ms (cache miss)
+124 http fetch GET 200 https://registry.npmjs.org/motion-utils/-/motion-utils-12.39.0.tgz 1024ms (cache miss)
+125 http fetch GET 200 https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.16.tgz 2797ms (cache miss)
+126 http fetch GET 200 https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.16.tgz 2862ms (cache miss)
+127 http fetch GET 200 https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.2.tgz 3314ms (cache miss)
+128 http fetch GET 200 https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.72.0.tgz 3403ms (cache miss)
+129 http fetch GET 200 https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.3.tgz 3636ms (cache miss)
+130 http fetch GET 200 https://registry.npmjs.org/motion-dom/-/motion-dom-12.43.0.tgz 4029ms (cache miss)
+131 http fetch GET 200 https://registry.npmjs.org/zod/-/zod-4.3.6.tgz 4488ms (cache miss)
+132 http fetch GET 200 https://registry.npmjs.org/lucide-react/-/lucide-react-0.575.0.tgz 15573ms (cache miss)
+133 silly ADD node_modules/motion-utils
+134 silly ADD node_modules/motion-dom
+135 silly ADD node_modules/@tanstack/query-core
+136 silly ADD node_modules/@standard-schema/utils
+137 silly ADD node_modules/zustand
+138 silly ADD node_modules/react-hook-form
+139 silly ADD node_modules/lucide-react
+140 silly ADD node_modules/framer-motion
+141 silly ADD node_modules/@tanstack/react-query
+142 silly ADD node_modules/@hookform/resolvers
+143 silly CHANGE node_modules/zod
+144 verbose cwd C:\Users\scyth\Documents\Codex\2026-08-01\build-the-application-incrementally-complete-one
+145 verbose os Windows_NT 10.0.26200
+146 verbose node v24.16.0
+147 verbose npm  v11.13.0
+148 verbose exit 0
+149 info ok
