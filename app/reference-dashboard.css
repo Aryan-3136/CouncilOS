@@ -3,3 +3,51 @@ html, body { color: var(--text); background: #f8fafc; }.app-shell { background: 
 .panel, .team-card, .m4-card, .m4-note, .m4-row, .task-row, .calendar-item, .month-day { border-color: #edf0f4; background: #fff; box-shadow: 0 6px 18px rgba(15,23,42,.025); }.page h1, .panel h2, .team-card, .task-row, .m4-card, .m4-note, .m4-row { color: #161d2a; }.subtle, .team-card-body > p, .m4-card > p, .m4-note > p, .m4-row p { color: #71809a; }.dialog { color: #172033; border-color: #e7ebf1; background: #fff; }.dialog-backdrop { background: rgba(15,23,42,.35); }.field { color: #374151; }.field input, .field textarea, .field select, .toolbar select { color: #172033; border-color: #e5e9ef; background: #fff; }.workspace-sheet { color: #172033; background: #fbfcfe; }.workspace-overlay { background: rgba(15,23,42,.35); }.workspace-hero, .workspace-tabs { background: #fff; border-color: #e8ecf2; }.workspace-hero h1, .workspace-panel h3, .workspace-stats strong, .workspace-list-item strong { color: #172033; }.workspace-panel, .workspace-stats article, .workspace-list-item { border-color: #e7ebf1; background: #fff; }.workspace-tabs button.active { color: #276eea; border-bottom-color: #276eea; }.details-list dd { color: #253047; }
 @media (max-width: 1050px) { .sidebar { width: 236px; }.workspace { width: calc(100% - 236px); margin-left: 236px; }.daily-layout { grid-template-columns: 1fr; }.daily-side { grid-template-columns: repeat(2, minmax(0,1fr)); }.quote-card { min-height: auto; } }.brand:after { left: 88px; }
 @media (max-width: 720px) { .sidebar { display: none; }.workspace { width: 100%; margin: 0; }.topbar { height: 76px; padding: 0 18px; }.search-button { width: 100%; }.search-button kbd { display: none; }.page { padding: 24px 18px 48px; }.daily-greeting { align-items: flex-start; gap: 16px; }.daily-greeting h1 { font-size: 25px; }.quick-add { padding: 11px 13px; font-size: 0; }.quick-add svg { margin: 0; }.metric-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }.metric-card { min-height: 150px; padding: 15px; }.metric-card .metric-icon { margin-bottom: 17px; }.daily-side { grid-template-columns: 1fr; }.project-pills { grid-template-columns: repeat(2, minmax(0,1fr)); }.project-pills > button:nth-child(2) { border-right: 0; }.plan-row { grid-template-columns: 23px minmax(0,1fr) 8px 48px; }.plan-row time { display: none; } }
+
+/* Premium interaction layer — preserves the white reference while removing the admin-panel feel. */
+body { font-family: Inter, Geist, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.topbar { backdrop-filter: blur(18px); }
+.search-button, .quick-add, .primary-button, .secondary-button, .team-card, .task-row, .m4-card, .m4-note, .daily-panel, .calendar-card, .metric-card, .workspace-stats article, .workspace-panel, .workspace-list-item { transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease, background-color .22s ease, border-color .22s ease; }
+.team-card:hover, .m4-card:hover, .m4-note:hover, .metric-card:hover { transform: translateY(-4px); box-shadow: 0 18px 35px rgba(31, 47, 70, .10); }
+.task-row:hover, .workspace-list-item:hover { transform: translateX(3px); box-shadow: 0 9px 22px rgba(31, 47, 70, .06); }
+.quick-add:hover, .primary-button:hover { transform: translateY(-2px); box-shadow: 0 13px 28px rgba(15, 23, 42, .19); }
+.quick-add:active, .primary-button:active, .secondary-button:active { transform: translateY(0) scale(.98); }
+.workspace-sheet { width: min(920px, 94vw); box-shadow: -24px 0 68px rgba(15, 23, 42, .18); }
+.workspace-hero { padding: 28px 34px 24px; background: radial-gradient(680px 210px at 0 0, #edf5ff 0%, #ffffff 62%); }
+.workspace-hero h1 { max-width: 720px; font-size: clamp(28px, 4vw, 42px); letter-spacing: -1.55px; }
+.workspace-hero > p { max-width: 620px; color: #64748b; font-size: 14px; }
+.workspace-icon { width: 48px; height: 48px; border-radius: 16px; color: #2563eb; background: #eaf2ff; box-shadow: 0 8px 20px rgba(37,99,235,.11); }
+.workspace-tabs { padding: 0 28px; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+.workspace-tabs button { border-radius: 10px 10px 0 0; padding: 14px 11px 12px; transition: color .18s ease, background-color .18s ease; }
+.workspace-tabs button:hover { background: #f5f8fc; color: #172033; }
+.workspace-content { padding: 28px 34px 44px; background: #f8fafc; }
+.workspace-stats { gap: 14px; }
+.workspace-stats article { min-height: 116px; padding: 20px; border-radius: 18px; box-shadow: 0 7px 20px rgba(15,23,42,.025); }
+.workspace-stats article:hover { transform: translateY(-3px); box-shadow: 0 16px 29px rgba(31,47,70,.09); }
+.workspace-stats strong { margin-top: 13px; font-size: 24px; letter-spacing: -.8px; }
+.workspace-brief { padding: 25px; border-radius: 20px; background: linear-gradient(135deg, #ffffff, #f3f8ff); }
+.workspace-brief h3 { max-width: 720px; font-size: 19px; line-height: 1.48; }
+.workspace-brief > p:not(.eyebrow) { max-width: 690px; margin: 12px 0 0; color: #6c7890; font-size: 13px; line-height: 1.55; }
+.milestone-board { padding: 2px 0; }
+.milestone-board-heading { display: flex; justify-content: space-between; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
+.milestone-board-heading h3 { margin: 0; color: #172033; font-size: 24px; letter-spacing: -.7px; }
+.milestone-board-heading p:not(.eyebrow) { max-width: 490px; margin: 7px 0 0; color: #71809a; font-size: 13px; line-height: 1.55; }
+.milestone-board-heading > span { flex: 0 0 auto; padding: 7px 10px; color: #52708f; border-radius: 999px; background: #edf3fa; font-size: 11px; font-weight: 650; }
+.milestone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.milestone-card { min-height: 218px; padding: 20px; border: 1px solid #e7edf5; border-radius: 20px; background: #fff; box-shadow: 0 8px 23px rgba(15,23,42,.035); transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease, border-color .22s ease; }
+.milestone-card:hover { transform: translateY(-4px); border-color: #d9e6f7; box-shadow: 0 18px 36px rgba(31,47,70,.10); }
+.milestone-card-top { display: flex; align-items: center; justify-content: space-between; }
+.milestone-number { display: grid; place-items: center; width: 34px; height: 34px; color: #3174e8; border-radius: 11px; background: #eaf2ff; font-size: 11px; font-weight: 750; }
+.milestone-card.completed .milestone-number { color: #18a463; background: #e8f9ef; }
+.milestone-status { padding: 5px 8px; color: #6c7890; border-radius: 999px; background: #f2f5f9; font-size: 10px; font-weight: 650; text-transform: capitalize; }
+.milestone-card.in-progress .milestone-status { color: #9a5c13; background: #fff4e5; }
+.milestone-card.completed .milestone-status { color: #148553; background: #e8f9ef; }
+.milestone-card h4 { margin: 20px 0 12px; color: #172033; font-size: 16px; line-height: 1.35; letter-spacing: -.25px; }
+.milestone-meta { display: flex; flex-wrap: wrap; gap: 7px 14px; color: #71809a; font-size: 11px; }
+.milestone-meta span::before { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 6px 1px 0; border-radius: 50%; background: #aab7c7; }
+.milestone-progress { display: grid; grid-template-columns: 1fr auto; gap: 7px; align-items: center; margin-top: 25px; color: #71809a; font-size: 11px; }
+.milestone-progress strong { color: #34445d; font-size: 11px; }
+.milestone-progress i { grid-column: 1 / -1; display: block; height: 6px; overflow: hidden; border-radius: 999px; background: #edf2f7; }
+.milestone-progress b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #4e8df8, #77aafc); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.milestone-card.completed .milestone-progress b { background: linear-gradient(90deg, #28bd7a, #6cdaa2); }
+@media (max-width: 720px) { .workspace-sheet { width: 100%; }.workspace-hero { padding: 23px 19px 20px; }.workspace-content { padding: 22px 18px 36px; }.workspace-tabs { padding: 0 13px; }.workspace-stats, .milestone-grid { grid-template-columns: 1fr; }.milestone-board-heading { align-items: flex-start; flex-direction: column; gap: 10px; }.milestone-card { min-height: 205px; } }
