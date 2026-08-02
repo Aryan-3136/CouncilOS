@@ -10,8 +10,9 @@ import { MilestoneFive } from "./milestone-five";
 import { MilestoneFour } from "./milestone-four";
 import { useFeedback } from "./feedback";
 import { CommandPalette, type CommandItem } from "./command-palette";
+import { WeeklyReview } from "./weekly-review";
 
-const navigation = [["Dashboard", LayoutDashboard], ["Tasks", ClipboardCheck], ["Projects", Layers3], ["Teams", UsersRound], ["Events", CalendarDays], ["Calendar", CalendarDays], ["Meetings", UsersRound], ["Notes", FileText], ["Knowledge Vault", Sparkles], ["Goals", Flag], ["Habits", Heart], ["Journal", FileText], ["Analytics", ArrowUpRight]] as const;
+const navigation = [["Dashboard", LayoutDashboard], ["Tasks", ClipboardCheck], ["Projects", Layers3], ["Teams", UsersRound], ["Events", CalendarDays], ["Calendar", CalendarDays], ["Meetings", UsersRound], ["Notes", FileText], ["Knowledge Vault", Sparkles], ["Goals", Flag], ["Habits", Heart], ["Journal", FileText], ["Weekly Review", ClipboardCheck], ["Analytics", ArrowUpRight]] as const;
 const colors: Record<string, string> = { cyan: "#22d3ee", blue: "#60a5fa", purple: "#a78bfa", amber: "#fbbf24", rose: "#fb7185", emerald: "#34d399" };
 
 type Team = { id: string; name: string; description: string; members: string; responsibilities: string; currentProjects: string; status: "active" | "planning" | "on_hold"; notes: string; color: string; icon: string; createdAt: string; updatedAt: string };
@@ -57,6 +58,7 @@ export function CouncilOS() {
       {activeSection === "Projects" ? <ProjectsPage projects={projects} loading={projectsQuery.isLoading} error={projectsQuery.error as Error | null} onCreate={() => setEditor({ kind: "project", item: null })} onOpen={(item) => setWorkspace({ kind: "project", item })} /> : null}
       {activeSection === "Events" || activeSection === "Meetings" || activeSection === "Notes" || activeSection === "Calendar" ? <MilestoneFour section={activeSection} teams={teams} projects={projects} tasks={tasks} /> : null}
       {activeSection === "Goals" || activeSection === "Habits" || activeSection === "Knowledge Vault" || activeSection === "Journal" ? <MilestoneFive section={activeSection} /> : null}
+      {activeSection === "Weekly Review" ? <WeeklyReview onNavigate={go} /> : null}
       {activeSection === "Dashboard" || activeSection === "Analytics" ? <ExecutiveDashboard onQuickAdd={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onSearch={() => setPaletteOpen(true)} onNavigate={go} /> : null}
     </section>
     <AnimatePresence>{workspace ? <WorkspaceSheet workspace={workspace} tasks={tasks} projects={projects} events={eventsQuery.data?.events ?? []} meetings={meetingsQuery.data?.meetings ?? []} notes={notesQuery.data?.notes ?? []} onClose={() => setWorkspace(null)} onEdit={() => setEditor({ kind: workspace.kind, item: workspace.item } as Editor)} onNavigate={go} onCreateTask={() => setEditor({ kind: "task", item: null })} onCreateProject={() => setEditor({ kind: "project", item: null })} /> : null}{editor ? <EditorDialog editor={editor} teams={teams} projects={projects} onClose={() => setEditor(null)} /> : null}</AnimatePresence>
