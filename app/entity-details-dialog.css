@@ -1,0 +1,8 @@
+.details-list { display: grid; gap: 0; margin: 0; padding: 8px 23px 20px; }
+.details-list > div { display: grid; grid-template-columns: 142px minmax(0, 1fr); gap: 18px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.details-list dt { color: #8292a6; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.details-list dd { min-width: 0; margin: 0; color: #dbeafe; font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 720px) { .details-list > div { grid-template-columns: 1fr; gap: 5px; } }
+.card-content-button { display: block; width: 100%; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; }
+.card-content-button:hover h2, .card-content-button:focus-visible h2 { color: var(--cyan); }
+.m4-row-main { border: 0; color: inherit; background: transparent; text-align: left; }
