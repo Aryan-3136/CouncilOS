@@ -9,6 +9,7 @@ import { ExecutiveDashboard } from "./executive-dashboard";
 import { MilestoneFive } from "./milestone-five";
 import { MilestoneFour } from "./milestone-four";
 import { useFeedback } from "./feedback";
+import { CommandPalette, type CommandItem } from "./command-palette";
 
 const navigation = [["Dashboard", LayoutDashboard], ["Tasks", ClipboardCheck], ["Projects", Layers3], ["Teams", UsersRound], ["Events", CalendarDays], ["Calendar", CalendarDays], ["Meetings", UsersRound], ["Notes", FileText], ["Knowledge Vault", Sparkles], ["Goals", Flag], ["Habits", Heart], ["Journal", FileText], ["Analytics", ArrowUpRight]] as const;
 const colors: Record<string, string> = { cyan: "#22d3ee", blue: "#60a5fa", purple: "#a78bfa", amber: "#fbbf24", rose: "#fb7185", emerald: "#34d399" };
@@ -19,6 +20,7 @@ type Project = { id: string; name: string; description: string; team: string; pr
 type Event = { id: string; title: string; startAt: string; team: string; status: string };
 type Meeting = { id: string; title: string; scheduledAt: string; team: string; project: string };
 type Note = { id: string; title: string; content: string; updatedAt: string };
+type SimpleItem = { id: string; title?: string; name?: string; description?: string; content?: string };
 type Workspace = { kind: "team"; item: Team } | { kind: "task"; item: Task } | { kind: "project"; item: Project };
 type Editor = { kind: "team"; item: Team | null } | { kind: "task"; item: Task | null } | { kind: "project"; item: Project | null } | null;
 
@@ -29,8 +31,10 @@ const statusLabel = (value: string) => value.replaceAll("_", " ");
 export function CouncilOS() {
   const activeSection = useUiStore((state) => state.activeSection);
   const setActiveSection = useUiStore((state) => state.setActiveSection);
+  const requestCreate = useUiStore((state) => state.requestCreate);
   const [editor, setEditor] = useState<Editor>(null);
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [teamSearch, setTeamSearch] = useState("");
   const teamsQuery = useQuery({ queryKey: ["teams"], queryFn: () => request<{ teams: Team[] }>("/api/teams") });
   const tasksQuery = useQuery({ queryKey: ["tasks"], queryFn: () => request<{ tasks: Task[] }>("/api/tasks") });
@@ -38,21 +42,25 @@ export function CouncilOS() {
   const eventsQuery = useQuery({ queryKey: ["events"], queryFn: () => request<{ events: Event[] }>("/api/events") });
   const meetingsQuery = useQuery({ queryKey: ["meetings"], queryFn: () => request<{ meetings: Meeting[] }>("/api/meetings") });
   const notesQuery = useQuery({ queryKey: ["notes"], queryFn: () => request<{ notes: Note[] }>("/api/notes") });
+  const goalsQuery = useQuery({ queryKey: ["goals"], queryFn: () => request<{ goals: SimpleItem[] }>("/api/goals") });
+  const habitsQuery = useQuery({ queryKey: ["habits"], queryFn: () => request<{ habits: SimpleItem[] }>("/api/habits") });
   const teams = teamsQuery.data?.teams ?? [], tasks = tasksQuery.data?.tasks ?? [], projects = projectsQuery.data?.projects ?? [];
   const visibleTeams = useMemo(() => teams.filter((team) => `${team.name} ${team.description} ${team.members}`.toLowerCase().includes(teamSearch.toLowerCase())), [teams, teamSearch]);
-  useEffect(() => { const onKey = (event: KeyboardEvent) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setActiveSection("Tasks"); } if (event.key.toLowerCase() === "n" && !event.metaKey && !event.ctrlKey && !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) { if (activeSection === "Teams") setEditor({ kind: "team", item: null }); if (activeSection === "Tasks") setEditor({ kind: "task", item: null }); if (activeSection === "Projects") setEditor({ kind: "project", item: null }); } }; window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [activeSection, setActiveSection]);
+  const commandItems: CommandItem[] = [...tasks.map((item) => ({ id: item.id, label: item.title, detail: [item.project, item.dueDate ? `Due ${dateLabel(item.dueDate)}` : ""].filter(Boolean).join(" · "), section: "Tasks", kind: "Task" })), ...projects.map((item) => ({ id: item.id, label: item.name, detail: item.description, section: "Projects", kind: "Project" })), ...teams.map((item) => ({ id: item.id, label: item.name, detail: item.description, section: "Teams", kind: "Team" })), ...(goalsQuery.data?.goals ?? []).map((item) => ({ id: item.id, label: item.title ?? "Untitled goal", detail: item.description ?? "", section: "Goals", kind: "Goal" })), ...(habitsQuery.data?.habits ?? []).map((item) => ({ id: item.id, label: item.name ?? "Untitled habit", detail: item.description ?? "", section: "Habits", kind: "Habit" })), ...(notesQuery.data?.notes ?? []).map((item) => ({ id: item.id, label: item.title, detail: item.content, section: "Notes", kind: "Note" }))];
+  useEffect(() => { const onKey = (event: KeyboardEvent) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setPaletteOpen(true); } if (event.key.toLowerCase() === "n" && !event.metaKey && !event.ctrlKey && !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) { if (activeSection === "Teams") setEditor({ kind: "team", item: null }); if (activeSection === "Tasks") setEditor({ kind: "task", item: null }); if (activeSection === "Projects") setEditor({ kind: "project", item: null }); } }; window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [activeSection]);
   const go = (section: string) => { setWorkspace(null); setActiveSection(section); };
   return <main className="app-shell">
     <aside className="sidebar"><div className="brand"><div className="brand-mark"><Sparkles size={17} /></div><span>Council<span>OS</span></span></div><nav>{navigation.map(([label, Icon]) => <button key={label} onClick={() => go(label)} className={`nav-item ${activeSection === label ? "selected" : ""}`}><Icon size={17} /><span>{label}</span>{label === "Tasks" && tasks.filter((task) => task.status !== "done").length ? <small>{tasks.filter((task) => task.status !== "done").length}</small> : null}</button>)}</nav><div className="sidebar-bottom"><button className="nav-item"><span className="avatar">A</span><span>My workspace</span></button></div></aside>
-    <section className="workspace"><header className="topbar"><div className="crumb"><span>Personal command center</span><strong>{activeSection}</strong></div><button className="search-button" onClick={() => go("Tasks")}><Search size={16} /><span>Search workspace</span><kbd>⌘ K</kbd></button></header>
+    <section className="workspace"><header className="topbar"><div className="crumb"><span>Personal command center</span><strong>{activeSection}</strong></div><button className="search-button" onClick={() => setPaletteOpen(true)}><Search size={16} /><span>Search workspace</span><kbd>⌘ K</kbd></button></header>
       {activeSection === "Teams" ? <TeamsPage teams={visibleTeams} total={teams.length} loading={teamsQuery.isLoading} error={teamsQuery.error as Error | null} search={teamSearch} onSearch={setTeamSearch} onCreate={() => setEditor({ kind: "team", item: null })} onOpen={(item) => setWorkspace({ kind: "team", item })} /> : null}
       {activeSection === "Tasks" ? <TasksPage tasks={tasks} loading={tasksQuery.isLoading} error={tasksQuery.error as Error | null} onCreate={() => setEditor({ kind: "task", item: null })} onOpen={(item) => setWorkspace({ kind: "task", item })} /> : null}
       {activeSection === "Projects" ? <ProjectsPage projects={projects} loading={projectsQuery.isLoading} error={projectsQuery.error as Error | null} onCreate={() => setEditor({ kind: "project", item: null })} onOpen={(item) => setWorkspace({ kind: "project", item })} /> : null}
       {activeSection === "Events" || activeSection === "Meetings" || activeSection === "Notes" || activeSection === "Calendar" ? <MilestoneFour section={activeSection} teams={teams} projects={projects} tasks={tasks} /> : null}
       {activeSection === "Goals" || activeSection === "Habits" || activeSection === "Knowledge Vault" || activeSection === "Journal" ? <MilestoneFive section={activeSection} /> : null}
-      {activeSection === "Dashboard" || activeSection === "Analytics" ? <ExecutiveDashboard onQuickAdd={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onSearch={() => go("Tasks")} onNavigate={go} /> : null}
+      {activeSection === "Dashboard" || activeSection === "Analytics" ? <ExecutiveDashboard onQuickAdd={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onSearch={() => setPaletteOpen(true)} onNavigate={go} /> : null}
     </section>
     <AnimatePresence>{workspace ? <WorkspaceSheet workspace={workspace} tasks={tasks} projects={projects} events={eventsQuery.data?.events ?? []} meetings={meetingsQuery.data?.meetings ?? []} notes={notesQuery.data?.notes ?? []} onClose={() => setWorkspace(null)} onEdit={() => setEditor({ kind: workspace.kind, item: workspace.item } as Editor)} onNavigate={go} onCreateTask={() => setEditor({ kind: "task", item: null })} onCreateProject={() => setEditor({ kind: "project", item: null })} /> : null}{editor ? <EditorDialog editor={editor} teams={teams} projects={projects} onClose={() => setEditor(null)} /> : null}</AnimatePresence>
+    {paletteOpen ? <CommandPalette items={commandItems} onClose={() => setPaletteOpen(false)} onSelect={(item) => { if (item.kind === "Task") { const task = tasks.find((candidate) => candidate.id === item.id); if (task) setWorkspace({ kind: "task", item: task }); } else if (item.kind === "Project") { const project = projects.find((candidate) => candidate.id === item.id); if (project) setWorkspace({ kind: "project", item: project }); } else if (item.kind === "Team") { const team = teams.find((candidate) => candidate.id === item.id); if (team) setWorkspace({ kind: "team", item: team }); } else go(item.section); }} onNewTask={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onNewGoal={() => requestCreate("Goals")} onNewHabit={() => requestCreate("Habits")} /> : null}
   </main>;
 }
 

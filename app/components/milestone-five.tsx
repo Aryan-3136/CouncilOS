@@ -2,9 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Clock3, FileText, Heart, LoaderCircle, Pencil, Plus, Target, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EntityDetailsDialog } from "./entity-details-dialog";
 import { useFeedback } from "./feedback";
+import { useUiStore } from "../lib/ui-store";
 
 type Section = "Goals" | "Habits" | "Knowledge Vault" | "Journal";
 type RecordItem = Record<string, unknown> & { id: string; title?: string; name?: string; content?: string; description?: string; completedToday?: boolean; progress?: number; status?: string; category?: string; mood?: string; tags?: string };
@@ -13,6 +14,8 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> { cons
 
 export function MilestoneFive({ section }: { section: Section }) {
   const [editing, setEditing] = useState<RecordItem | "new" | null>(null); const [viewing, setViewing] = useState<RecordItem | null>(null); const itemConfig = config[section]; const Icon = itemConfig.icon;
+  const createIntent = useUiStore((state) => state.createIntent); const clearCreateIntent = useUiStore((state) => state.clearCreateIntent);
+  useEffect(() => { if (createIntent === section) { setEditing("new"); clearCreateIntent(); } }, [createIntent, section, clearCreateIntent]);
   const query = useQuery({ queryKey: [itemConfig.path], queryFn: () => request<{ goals?: RecordItem[]; habits?: RecordItem[]; entries?: RecordItem[] }>(`/api/${itemConfig.path}`) });
   const items = query.data?.goals ?? query.data?.habits ?? query.data?.entries ?? [];
   return <><div className="page"><div className="page-heading"><div><p className="eyebrow">Personal operating system</p><h1>{section}</h1><p className="subtle">{itemConfig.detail}</p></div><button className="primary-button" onClick={() => setEditing("new")}><Plus size={17} /> New {itemConfig.label}</button></div>{query.isLoading ? <div className="loading-state"><LoaderCircle className="spin" size={20} /> Loading your workspace…</div> : query.error ? <div className="error-state">{query.error.message}</div> : items.length ? <div className={section === "Habits" ? "task-list" : "m4-card-grid"}>{items.map((item) => <Card key={item.id} item={item} section={section} onView={() => setViewing(item)} onEdit={() => setEditing(item)} />)}</div> : <div className="large-empty"><div className="empty-state"><span className="empty-icon"><Icon size={24} /></span><h3>No {section.toLowerCase()} yet</h3><p>Start small. The first record becomes a useful part of your daily system.</p><button className="secondary-button" onClick={() => setEditing("new")}><Plus size={16} /> Add {itemConfig.label}</button></div></div>}</div>{viewing ? <PersonalWorkspace section={section} item={viewing} close={() => setViewing(null)} edit={() => { setViewing(null); setEditing(viewing); }} /> : null}{editing ? <Editor section={section} item={editing === "new" ? null : editing} close={() => setEditing(null)} /> : null}</>;
