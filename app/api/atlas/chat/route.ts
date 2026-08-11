@@ -4,6 +4,8 @@ import { atlasTools, executeAtlasTool, isWriteTool } from "../../../lib/atlas-to
 import { sanitizeReply } from "../../../lib/text-utils";
 
 export const dynamic = "force-dynamic";
+// TEMP: forcing Groq to isolate whether qwen3:4b's tool-calling reliability is the root cause of false success confirmations
+const FORCE_GROQ = true;
 
 const messageSchema = z.object({ role: z.enum(["user", "assistant", "tool"]), content: z.string().nullable().optional(), tool_call_id: z.string().optional(), tool_calls: z.array(z.object({ id: z.string(), type: z.literal("function").optional(), function: z.object({ name: z.string(), arguments: z.string() }) })).optional() });
 const schema = z.object({ message: z.string().trim().min(1).max(4000).optional(), messages: z.array(messageSchema).min(1).max(20).optional() }).refine((value) => value.message || value.messages, "Write a message for Atlas.");
@@ -18,7 +20,7 @@ function normalizedHistory(input: z.infer<typeof schema>) {
 function writeIntent(messages: ChatMessage[]) { const last = [...messages].reverse().find((message) => message.role === "user")?.content?.toLowerCase() ?? ""; return /\b(add|create|make|complete|check off|checkoff|assign)\b/.test(last) && /\b(task|habit|team)\b/.test(last); }
 function assistantMessage(value: ChatMessage) { return { role: "assistant" as const, content: value.content ?? "", ...(value.tool_calls?.length ? { tool_calls: value.tool_calls } : {}) }; }
 async function askGroq(key: string, model: string, system: string, messages: ChatMessage[], allowTools: boolean) { return fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ model, messages: [{ role: "system", content: system }, ...messages], ...(allowTools ? { tools: atlasTools, tool_choice: "auto" } : { tool_choice: "none" }), reasoning_effort: model.startsWith("qwen/") ? "none" : "low", temperature: .25, max_tokens: 200 }) }); }
-async function askWithFallback(key: string, system: string, messages: ChatMessage[], allowTools = true) { let response = await askGroq(key, "openai/gpt-oss-120b", system, messages, allowTools); if (!response.ok && [400, 403, 404].includes(response.status)) response = await askGroq(key, "qwen/qwen3.6-27b", system, messages, allowTools); if (!response.ok) { const failure = await response.json().catch(() => null) as GroqResponse | null; throw new Error(failure?.error?.message || `Atlas could not reach Groq (HTTP ${response.status}).`); } return response.json() as Promise<GroqResponse>; }
+async function askWithFallback(key: string, system: string, messages: ChatMessage[], allowTools = true) { if (!FORCE_GROQ) throw new Error("No local Atlas provider is configured."); let response = await askGroq(key, "openai/gpt-oss-120b", system, messages, allowTools); if (!response.ok && [400, 403, 404].includes(response.status)) response = await askGroq(key, "qwen/qwen3.6-27b", system, messages, allowTools); if (!response.ok) { const failure = await response.json().catch(() => null) as GroqResponse | null; throw new Error(failure?.error?.message || `Atlas could not reach Groq (HTTP ${response.status}).`); } return response.json() as Promise<GroqResponse>; }
 
 export async function POST(request: Request) {
   try {

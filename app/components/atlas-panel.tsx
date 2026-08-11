@@ -15,6 +15,7 @@ export function AtlasPanel() {
   const [history, setHistory] = useState<HistoryMessage[]>([{ role: "assistant", content: "I'm Atlas. Ask about your personal priorities or your council's status." }]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [voiceError, setVoiceError] = useState("");
   const voice = useVoice();
   const isNewConversation = messages.length === 1 && !loading;
   const starters = ["What should I focus on today?", "Add a task", "Show my habit progress", "Which council team needs attention?"];
@@ -29,24 +30,31 @@ export function AtlasPanel() {
     setMessages((current) => [...current, { role: "user", content: message }]);
     setHistory(nextHistory);
     setLoading(true);
+    setVoiceError("");
     if (shouldSpeak) voice.thinking();
 
     try {
+      const controller = shouldSpeak ? new AbortController() : undefined;
+      const timeout = shouldSpeak ? window.setTimeout(() => controller?.abort(), 20_000) : undefined;
       const response = await fetch("/api/atlas/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: nextHistory }),
+        signal: controller?.signal,
       });
+      if (timeout) window.clearTimeout(timeout);
+      if (!response.ok) throw new Error("Atlas request failed");
       const body = await response.json();
       const reply = sanitizeReply(body.reply || body.error || "Atlas is unavailable.");
       setMessages((current) => [...current, { role: "assistant", content: reply }]);
       if (Array.isArray(body.history)) setHistory(body.history.slice(-20)); else setHistory((current) => [...current, { role: "assistant" as const, content: reply }].slice(-20));
-      if (shouldSpeak) voice.speak(reply);
-    } catch {
-      const reply = sanitizeReply("I couldn't reach Atlas just now. Please try again.");
+      if (shouldSpeak) { try { voice.speak(reply); } catch { setVoiceError("Something went wrong — tap to try again"); voice.fail("Text-to-speech failed"); } }
+    } catch (error) {
+      const timedOut = error instanceof DOMException && error.name === "AbortError";
+      const reply = sanitizeReply(timedOut ? "Atlas took too long to respond. Please try again." : "Something went wrong — tap to try again.");
       setMessages((current) => [...current, { role: "assistant", content: reply }]);
       setHistory((current) => [...current, { role: "assistant" as const, content: reply }].slice(-20));
-      if (shouldSpeak) voice.speak(reply);
+      if (shouldSpeak) { setVoiceError("Something went wrong — tap to try again"); voice.fail(timedOut ? "Atlas request timed out" : "Atlas request failed"); }
     } finally {
       setLoading(false);
     }
@@ -79,6 +87,7 @@ export function AtlasPanel() {
 
       {voice.active && voice.interimTranscript ? <p className="voice-transcript">“{voice.interimTranscript}”</p> : null}
 
+      {voiceError ? <button className="atlas-voice-error" type="button" onClick={() => { setVoiceError(""); voice.start(); }}>{voiceError}</button> : null}
       <section className={`atlas-chat ${isNewConversation ? "atlas-chat-empty" : ""}`} aria-live="polite">
         {isNewConversation ? <div className="atlas-welcome"><span className="atlas-welcome-mark"><Sparkles size={22} /></span><h2>How can I help?</h2><p>Plan your day, keep habits moving, or coordinate your council.</p><div className="atlas-starters">{starters.map((starter) => <button type="button" key={starter} onClick={() => { setText(starter); }}>{starter}</button>)}</div></div> : null}
         {messages.map((message, index) => <article className={`atlas-message ${message.role}`} key={index}>{message.role === "assistant" ? <Sparkles size={16} /> : null}<p>{message.content}</p></article>)}
