@@ -12,6 +12,7 @@ import { useFeedback } from "./feedback";
 import { CommandPalette, type CommandItem } from "./command-palette";
 import { WeeklyReview } from "./weekly-review";
 import { AtlasPanel } from "./atlas-panel";
+import { TeamHealth } from "./team-health";
 
 const navigation = [["Dashboard", LayoutDashboard], ["Atlas", Sparkles], ["Tasks", ClipboardCheck], ["Projects", Layers3], ["Teams", UsersRound], ["Events", CalendarDays], ["Calendar", CalendarDays], ["Meetings", UsersRound], ["Notes", FileText], ["Knowledge Vault", Sparkles], ["Goals", Flag], ["Habits", Heart], ["Journal", FileText], ["Weekly Review", ClipboardCheck], ["Analytics", ArrowUpRight]] as const;
 const colors: Record<string, string> = { cyan: "#22d3ee", blue: "#60a5fa", purple: "#a78bfa", amber: "#fbbf24", rose: "#fb7185", emerald: "#34d399" };
@@ -63,7 +64,7 @@ export function CouncilOS() {
       {activeSection === "Goals" || activeSection === "Habits" || activeSection === "Knowledge Vault" || activeSection === "Journal" ? <MilestoneFive section={activeSection} /> : null}
       {activeSection === "Weekly Review" ? <WeeklyReview onNavigate={go} /> : null}
       {activeSection === "Atlas" ? <AtlasPanel /> : null}
-      {activeSection === "Dashboard" || activeSection === "Analytics" ? <ExecutiveDashboard onQuickAdd={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onSearch={() => setPaletteOpen(true)} onNavigate={go} /> : null}
+      {activeSection === "Dashboard" || activeSection === "Analytics" ? <><ExecutiveDashboard onQuickAdd={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onSearch={() => setPaletteOpen(true)} onNavigate={go} />{activeSection === "Dashboard" ? <TeamHealth teams={teams} onOpen={(team) => setWorkspace({ kind: "team", item: team as Team })} /> : null}</> : null}
     </section>
     <AnimatePresence>{workspace ? <WorkspaceSheet workspace={workspace} tasks={tasks} projects={projects} events={eventsQuery.data?.events ?? []} meetings={meetingsQuery.data?.meetings ?? []} notes={notesQuery.data?.notes ?? []} onClose={() => setWorkspace(null)} onEdit={() => setEditor({ kind: workspace.kind, item: workspace.item } as Editor)} onNavigate={go} onCreateTask={() => setEditor({ kind: "task", item: null })} onCreateProject={() => setEditor({ kind: "project", item: null })} /> : null}{editor ? <EditorDialog editor={editor} teams={teams} projects={projects} onClose={() => setEditor(null)} /> : null}</AnimatePresence>
     {paletteOpen ? <CommandPalette items={commandItems} onClose={() => setPaletteOpen(false)} onSelect={(item) => { if (item.kind === "Task") { const task = tasks.find((candidate) => candidate.id === item.id); if (task) setWorkspace({ kind: "task", item: task }); } else if (item.kind === "Project") { const project = projects.find((candidate) => candidate.id === item.id); if (project) setWorkspace({ kind: "project", item: project }); } else if (item.kind === "Team") { const team = teams.find((candidate) => candidate.id === item.id); if (team) setWorkspace({ kind: "team", item: team }); } else go(item.section); }} onNewTask={() => { go("Tasks"); setEditor({ kind: "task", item: null }); }} onNewGoal={() => requestCreate("Goals")} onNewHabit={() => requestCreate("Habits")} /> : null}
