@@ -17,8 +17,8 @@ function normalizedHistory(input: z.infer<typeof schema>) {
 }
 function writeIntent(messages: ChatMessage[]) { const last = [...messages].reverse().find((message) => message.role === "user")?.content?.toLowerCase() ?? ""; return /\b(add|create|make|complete|check off|checkoff|assign)\b/.test(last) && /\b(task|habit|team)\b/.test(last); }
 function assistantMessage(value: ChatMessage) { return { role: "assistant" as const, content: value.content ?? "", ...(value.tool_calls?.length ? { tool_calls: value.tool_calls } : {}) }; }
-async function askGroq(key: string, model: string, system: string, messages: ChatMessage[]) { return fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ model, messages: [{ role: "system", content: system }, ...messages], tools: atlasTools, tool_choice: "auto", temperature: .25, max_tokens: 120 }) }); }
-async function askWithFallback(key: string, system: string, messages: ChatMessage[]) { let response = await askGroq(key, "openai/gpt-oss-120b", system, messages); if (!response.ok && [400, 403, 404].includes(response.status)) response = await askGroq(key, "qwen/qwen3.6-27b", system, messages); if (!response.ok) { const failure = await response.json().catch(() => null) as GroqResponse | null; throw new Error(failure?.error?.message || `Atlas could not reach Groq (HTTP ${response.status}).`); } return response.json() as Promise<GroqResponse>; }
+async function askGroq(key: string, model: string, system: string, messages: ChatMessage[], allowTools: boolean) { return fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ model, messages: [{ role: "system", content: system }, ...messages], ...(allowTools ? { tools: atlasTools, tool_choice: "auto" } : { tool_choice: "none" }), reasoning_effort: model.startsWith("qwen/") ? "none" : "low", temperature: .25, max_tokens: 200 }) }); }
+async function askWithFallback(key: string, system: string, messages: ChatMessage[], allowTools = true) { let response = await askGroq(key, "openai/gpt-oss-120b", system, messages, allowTools); if (!response.ok && [400, 403, 404].includes(response.status)) response = await askGroq(key, "qwen/qwen3.6-27b", system, messages, allowTools); if (!response.ok) { const failure = await response.json().catch(() => null) as GroqResponse | null; throw new Error(failure?.error?.message || `Atlas could not reach Groq (HTTP ${response.status}).`); } return response.json() as Promise<GroqResponse>; }
 
 export async function POST(request: Request) {
   try {
@@ -50,13 +50,13 @@ export async function POST(request: Request) {
         toolMessages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
       }
       completedHistory.push(...toolMessages);
-      const second = await askWithFallback(key, system, completedHistory);
+      const second = await askWithFallback(key, system, completedHistory, false);
       finalMessage = second.choices?.[0]?.message;
       console.info("Atlas follow-up raw tool_calls", finalMessage?.tool_calls?.length ? finalMessage.tool_calls : null);
     }
 
     const unearnedWrite = writeIntent(history) && !verifiedWrite;
-    const reply = unearnedWrite ? "I couldn't complete that action because it was not verified." : sanitizeReply(finalMessage?.content || "Atlas could not form a reply.");
+    const reply = unearnedWrite ? "I couldn't complete that action because it was not verified." : sanitizeReply(finalMessage?.content || "I couldn't generate a response. Please try again.");
     return Response.json({ reply, history: [...completedHistory, { role: "assistant", content: reply }].slice(-20) });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "Atlas is unavailable" }, { status: 500 });

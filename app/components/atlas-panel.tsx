@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LoaderCircle, Mic, MicOff, Send, Sparkles, Volume2 } from "lucide-react";
+import { ArrowUp, LoaderCircle, Mic, MicOff, Send, Sparkles, Volume2 } from "lucide-react";
 import { useVoice } from "../lib/use-voice";
 import { sanitizeReply } from "../lib/text-utils";
 
@@ -16,6 +16,8 @@ export function AtlasPanel() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const voice = useVoice();
+  const isNewConversation = messages.length === 1 && !loading;
+  const starters = ["What should I focus on today?", "Add a task", "Show my habit progress", "Which council team needs attention?"];
 
   const send = async (messageOverride?: string) => {
     const message = (messageOverride ?? text).trim();
@@ -77,15 +79,17 @@ export function AtlasPanel() {
 
       {voice.active && voice.interimTranscript ? <p className="voice-transcript">“{voice.interimTranscript}”</p> : null}
 
-      <section className="atlas-chat" aria-live="polite">
+      <section className={`atlas-chat ${isNewConversation ? "atlas-chat-empty" : ""}`} aria-live="polite">
+        {isNewConversation ? <div className="atlas-welcome"><span className="atlas-welcome-mark"><Sparkles size={22} /></span><h2>How can I help?</h2><p>Plan your day, keep habits moving, or coordinate your council.</p><div className="atlas-starters">{starters.map((starter) => <button type="button" key={starter} onClick={() => { setText(starter); }}>{starter}</button>)}</div></div> : null}
         {messages.map((message, index) => <article className={`atlas-message ${message.role}`} key={index}>{message.role === "assistant" ? <Sparkles size={16} /> : null}<p>{message.content}</p></article>)}
         {loading ? voice.active ? <article className="atlas-voice-thinking"><span className="voice-orb"><Volume2 size={20} /></span><div><strong>Atlas is considering your request</strong><p>I'll speak the answer, then keep listening.</p></div></article> : <article className="atlas-message assistant"><LoaderCircle className="spin" size={16} /><p>Atlas is thinking…</p></article> : null}
       </section>
 
       <form className="atlas-compose" onSubmit={(event) => { event.preventDefault(); void send(); }}>
-        <input value={text} onChange={(event) => setText(event.target.value)} placeholder="What is on my plate today?" />
-        <button className="primary-button" disabled={loading}><Send size={16} /> Send</button>
+        <input value={text} onChange={(event) => setText(event.target.value)} placeholder="Message Atlas..." aria-label="Message Atlas" />
+        <button className="atlas-send" disabled={loading || !text.trim()} aria-label="Send message"><ArrowUp size={18} /></button>
       </form>
+      <p className="atlas-hint">Atlas can create tasks, check off habits, and help you prioritize.</p>
     </div>
   );
 }
