@@ -48,7 +48,7 @@ export function AtlasPanel() {
       const reply = sanitizeReply(body.reply || body.error || "Atlas is unavailable.");
       setMessages((current) => [...current, { role: "assistant", content: reply }]);
       if (Array.isArray(body.history)) setHistory(body.history.slice(-20)); else setHistory((current) => [...current, { role: "assistant" as const, content: reply }].slice(-20));
-      if (shouldSpeak) { try { voice.speak(reply); } catch { setVoiceError("Something went wrong — tap to try again"); voice.fail("Text-to-speech failed"); } }
+      if (shouldSpeak) { try { const spoken = reply.match(/^[\s\S]*?[.!?](?:\s|$)/)?.[0]?.trim() || reply; voice.speak(spoken); if (spoken !== reply) console.info("Atlas voice reply truncated:", reply); } catch { setVoiceError("Something went wrong — tap to try again"); voice.fail("Text-to-speech failed"); } }
     } catch (error) {
       const timedOut = error instanceof DOMException && error.name === "AbortError";
       const reply = sanitizeReply(timedOut ? "Atlas took too long to respond. Please try again." : "Something went wrong — tap to try again.");
@@ -82,6 +82,7 @@ export function AtlasPanel() {
             {voice.active ? "End voice" : "Voice mode"}
           </button>
           {voice.active ? <span className="voice-status"><span />{voiceLabel}</span> : null}
+          {voice.state === "speaking" ? <button className="voice-toggle active" type="button" onClick={voice.interruptSpeech}><MicOff size={16} /> Stop speaking</button> : null}
         </div>
       </div>
 
