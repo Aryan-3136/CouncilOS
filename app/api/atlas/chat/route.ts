@@ -46,7 +46,9 @@ export async function POST(request: Request) {
       completedHistory.push(assistantMessage(firstMessage ?? { role: "assistant", content: "" }));
       const toolMessages: ChatMessage[] = [];
       for (const call of calls) {
+        console.info("Atlas tool execution", { name: call.function.name, arguments: call.function.arguments });
         const result = await executeAtlasTool(call);
+        console.info("Atlas tool result", { name: call.function.name, result });
         const name = call.function.name;
         if (isWriteTool(name) && result.success) verifiedWrite = true;
         toolMessages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
