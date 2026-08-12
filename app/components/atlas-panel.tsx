@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUp, LoaderCircle, Mic, MicOff, Send, Sparkles, Volume2 } from "lucide-react";
 import { useVoice } from "../lib/use-voice";
 import { sanitizeReply } from "../lib/text-utils";
@@ -8,7 +9,13 @@ import { sanitizeReply } from "../lib/text-utils";
 type Message = { role: "user" | "assistant"; content: string };
 type HistoryMessage = { role: "user" | "assistant" | "tool"; content: string | null; tool_call_id?: string; tool_calls?: { id: string; type?: "function"; function: { name: string; arguments: string } }[] };
 
+function successfulTools(history: HistoryMessage[]) {
+  const names = new Map(history.flatMap((message) => message.tool_calls?.map((call) => [call.id, call.function.name] as const) ?? []));
+  return history.flatMap((message) => { if (message.role !== "tool" || !message.tool_call_id || !message.content) return []; try { return JSON.parse(message.content).success ? [names.get(message.tool_call_id)].filter((name): name is string => Boolean(name)) : []; } catch { return []; } });
+}
+
 export function AtlasPanel() {
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "I'm Atlas. Ask about your personal priorities or your council's status." },
   ]);
@@ -47,7 +54,7 @@ export function AtlasPanel() {
       const body = await response.json();
       const reply = sanitizeReply(body.reply || body.error || "Atlas is unavailable.");
       setMessages((current) => [...current, { role: "assistant", content: reply }]);
-      if (Array.isArray(body.history)) setHistory(body.history.slice(-20)); else setHistory((current) => [...current, { role: "assistant" as const, content: reply }].slice(-20));
+      if (Array.isArray(body.history)) { const updatedHistory = body.history.slice(-20) as HistoryMessage[]; setHistory(updatedHistory); const tools = successfulTools(updatedHistory); const invalidations: Promise<unknown>[] = []; if (tools.some((name) => ["create_task", "assign_task_to_team", "complete_task"].includes(name))) invalidations.push(queryClient.invalidateQueries({ queryKey: ["tasks"] }), queryClient.invalidateQueries({ queryKey: ["goals"] }), queryClient.invalidateQueries({ queryKey: ["weekly-review"] }), queryClient.invalidateQueries({ queryKey: ["team-status"] })); if (tools.includes("checkin_habit")) invalidations.push(queryClient.invalidateQueries({ queryKey: ["habits"] }), queryClient.invalidateQueries({ queryKey: ["weekly-review"] })); if (tools.includes("create_team")) invalidations.push(queryClient.invalidateQueries({ queryKey: ["teams"] }), queryClient.invalidateQueries({ queryKey: ["team-status"] }), queryClient.invalidateQueries({ queryKey: ["weekly-review"] })); if (invalidations.length) await Promise.all(invalidations); } else setHistory((current) => [...current, { role: "assistant" as const, content: reply }].slice(-20));
       if (shouldSpeak) { try { const spoken = reply.match(/^[\s\S]*?[.!?](?:\s|$)/)?.[0]?.trim() || reply; voice.speak(spoken); if (spoken !== reply) console.info("Atlas voice reply truncated:", reply); } catch { setVoiceError("Something went wrong — tap to try again"); voice.fail("Text-to-speech failed"); } }
     } catch (error) {
       const timedOut = error instanceof DOMException && error.name === "AbortError";
